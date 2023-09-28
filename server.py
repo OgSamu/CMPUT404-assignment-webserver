@@ -66,36 +66,36 @@ class MyWebServer(socketserver.BaseRequestHandler):
         return
 
     def get_indexRes(self, path):
-        file_name = BASE_PATH + path + "index.html"
+        fname = BASE_PATH + path + "index.html"
         try:
-            content = self.getContent(file_name)
+            content = self.getContent(fname)
             response_text = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, HTML_TYPE, content)
         except:
             response_text = HTTP_NOT_FOUND + "\r\n"
         return response_text
 
     def get_htmlRes(self, path):
-        file_name = BASE_PATH + path
+        fname = BASE_PATH + path
         try:
-            content = self.getContent(file_name)
+            content = self.getContent(fname)
             response_text = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, HTML_TYPE, content)
         except:
             response_text = HTTP_NOT_FOUND + "\r\n"
         return response_text
 
     def get_cssRes(self, path):
-        file_name = BASE_PATH + path
+        fname = BASE_PATH + path
         try:
-            content = self.getContent(file_name)
+            content = self.getContent(fname)
             response_text = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, CSS_TYPE, content)
         except:
             response_text = HTTP_NOT_FOUND + "\r\n"
         return response_text
 
     def redirect_index(self, path):
-        file_name = BASE_PATH + path + "/index.html"
+        fname = BASE_PATH + path + "/index.html"
         try:
-            content = self.getContent(file_name)
+            content = self.getContent(fname)
             response_text = "{}\r\nLocation: {}\r\n".format(HTTP_MOVED, path + "/")
         except:
             response_text = HTTP_NOT_FOUND + "\r\n"
