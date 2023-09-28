@@ -48,60 +48,63 @@ class MyWebServer(socketserver.BaseRequestHandler):
         path = data[1]
 
         if method == "GET":
-           
-            if path.endswith(".css"):
-                response_text = self.get_cssRes(path)
-            elif path.endswith("/"):
-                response_text = self.get_indexRes(path)
-            elif path.endswith(".html"):
-                response_text = self.get_htmlRes(path)
-            elif path.startswith("/.."):
-                response_text = HTTP_NOT_FOUND + "\r\n"
-            else:
-                response_text = self.redirect_index(path)
+           response = self.handle_get(path)
         else:
-            response_text = HTTP_NOT_ALLOWED + "\r\n"
+            response = HTTP_NOT_ALLOWED + "\r\n"
 
-        self.request.sendall(bytearray(response_text, 'utf-8'))
+        self.request.sendall(bytearray(response, 'utf-8'))
         return
+    
+    def handle_get(self, path):
+        if path.endswith(".css"):
+            response = self.get_cssRes(path)
+        elif path.endswith("/"):
+            response = self.get_indexRes(path)
+        elif path.endswith(".html"):
+            response = self.get_htmlRes(path)
+        elif path.startswith("/.."):
+            response = HTTP_NOT_FOUND + "\r\n"
+        else:
+            response = self.redirect_index(path)
+        return response
 
     def get_indexRes(self, path):
         fname = BASE_PATH + path + "index.html"
         try:
-            content = self.getContent(fname)
-            response_text = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, HTML_TYPE, content)
+            content = self.rFile(fname)
+            response = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, HTML_TYPE, content)
         except:
-            response_text = HTTP_NOT_FOUND + "\r\n"
-        return response_text
+            response = HTTP_NOT_FOUND + "\r\n"
+        return response
 
     def get_htmlRes(self, path):
         fname = BASE_PATH + path
         try:
-            content = self.getContent(fname)
-            response_text = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, HTML_TYPE, content)
+            content = self.rFile(fname)
+            response = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, HTML_TYPE, content)
         except:
-            response_text = HTTP_NOT_FOUND + "\r\n"
-        return response_text
+            response = HTTP_NOT_FOUND + "\r\n"
+        return response
 
     def get_cssRes(self, path):
         fname = BASE_PATH + path
         try:
-            content = self.getContent(fname)
-            response_text = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, CSS_TYPE, content)
+            content = self.rFile(fname)
+            response = "{}\r\nContent-Type: {}\r\n\r\n{}".format(HTTP_OK, CSS_TYPE, content)
         except:
-            response_text = HTTP_NOT_FOUND + "\r\n"
-        return response_text
+            response = HTTP_NOT_FOUND + "\r\n"
+        return response
 
     def redirect_index(self, path):
         fname = BASE_PATH + path + "/index.html"
         try:
-            content = self.getContent(fname)
-            response_text = "{}\r\nLocation: {}\r\n".format(HTTP_MOVED, path + "/")
+            content = self.rFile(fname)
+            response = "{}\r\nLocation: {}\r\n".format(HTTP_MOVED, path + "/")
         except:
-            response_text = HTTP_NOT_FOUND + "\r\n"
-        return response_text
+            response = HTTP_NOT_FOUND + "\r\n"
+        return response
 
-    def getContent(self, name):
+    def rFile(self, name):
         with open(name, "r") as f:
             content = f.read()
         return content
